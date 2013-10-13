@@ -1,0 +1,181 @@
+<div class="container x-full-height">
+
+    <div class="row x-full-height">
+        <div class="col-lg-3 x-no-padding x-full-height">
+            <div class="panel panel-default x-full-height">
+                <!-- Default panel contents -->
+                <div class="panel-heading x-usr-group">
+                    <strong>W3C Campus</strong>
+                </div>
+                <div class="panel-body x-user-container">
+                    <div class="media">
+                        <a class="pull-left" href="#">
+                            <img class="media-object" src="http://placehold.it/50x50" alt="...">
+                        </a>
+                        <div class="media-body">
+                            <h4 class="media-heading">{{current.name}}</h4>
+                            Online
+                            <i class="icon icon-circle x-online"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- List group -->
+                <ul
+                        id="js-buddy-list"
+                        class="list-group x-list-group x-scroll-y">
+                    <li
+                            ng-repeat="(key, username) in users"
+                            class="list-group-item">
+                        {{username}}
+                        <i class="icon icon-phone x-webrtc-on pull-right"></i>
+                        <i class="icon icon-circle x-online pull-right"></i>
+                        <button
+                                ng-click="offerWebRTC(username)"
+                                class="btn btn-success">Call</button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-lg-4 x-no-padding x-full-height">
+            <div class="panel panel-default x-full-height">
+                <!-- Default panel contents -->
+                <div class="panel-heading x-usr-group">
+                    Feed
+                </div>
+
+
+                <section
+                        id="js-feed"
+                        class="x-feed x-scroll-y">
+
+                    <div
+                            ng-repeat="message in messages"
+                            class="well well-sm">
+                        <div ng-class="{'text-right': message.me}">
+                            <small>{{message.name}}:</small>
+                            <p> {{message.text}} </p>
+                        </div>
+                    </div>
+
+                </section>
+
+
+                <div class="panel-heading x-usr-group">
+                    <form>
+                        <div class="input-group">
+                            <input type="text" class="form-control" ng-model="message">
+                      <span class="input-group-btn">
+                        <button
+                                ng-click="sendMessage(message);"
+                                class="btn btn-default"
+                                type="submit">
+                            Send
+                        </button>
+                      </span>
+                        </div>
+                    </form>
+                </div>
+
+
+
+
+            </div>
+        </div>
+        <div class="col-lg-5 x-no-padding">
+            <section>
+                <div class="panel panel-default">
+                    <!-- Default panel contents -->
+                    <div class="panel-heading x-usr-group">
+                        Helping Others
+                    </div>
+                    <div class="panel-heading x-nav-issues">
+                        Scheduled Conversations
+                        <button type="button"
+                                class="btn btn-primary btn-xs pull-right">
+                            Add New
+                        </button>
+                    </div>
+
+                    <!-- List group -->
+                    <section id="js-helping-others">
+                        <ul class="list-group x-list-group">
+                            <li class="list-group-item">
+                                <div>
+                                    <strong class="list-group-item-heading">I don't understand closures</strong>
+                                    <span class="label label-primary">JavaScript</span>
+                                    <span class="label label-warning">Homework</span>
+                                    <button class="btn btn-success pull-right">Call Now</button>
+                                </div>
+                                <small class="list-group-item-text">Open by James Nocentini</small>
+                            </li>
+                            <li class="list-group-item">
+                                <div>
+                                    <strong class="list-group-item-heading">I don't understand closures</strong>
+                                    <span class="label label-primary">JavaScript</span>
+                                    <span class="label label-warning">Homework</span>
+                                    <button class="btn btn-default pull-right">Offline</button>
+                                </div>
+                                <small class="list-group-item-text">Open by James Nocentini</small>
+                            </li>
+                            <li class="list-group-item">
+                                <div>
+                                    <strong class="list-group-item-heading">I don't understand closures</strong>
+                                    <span class="label label-primary">JavaScript</span>
+                                    <span class="label label-warning">Homework</span>
+                                    <button class="btn btn-default pull-right">Offline</button>
+                                </div>
+                                <small class="list-group-item-text">Open by James Nocentini</small>
+                            </li>
+                            <li class="list-group-item">
+                                <div>
+                                    <strong class="list-group-item-heading">I don't understand closures</strong>
+                                    <span class="label label-primary">JavaScript</span>
+                                    <span class="label label-warning">Homework</span>
+                                    <button class="btn btn-success pull-right">Call Now</button>
+                                </div>
+                                <small class="list-group-item-text">Open by James Nocentini</small>
+                            </li>
+
+                        </ul>
+                    </section>
+
+                </div>
+            </section>
+
+            <section id="js-webrtc" class="x-audio-chat">
+
+                <div class="panel panel-default">
+                    <div class="panel-heading x-nav-issues">
+                        Action!
+                    </div>
+                </div>
+
+                <h3 ng-show="!webrtc_browser" class="text-center">
+                    Your browser is not compatible for audio or video conversations.
+                    <br>
+                    Please use Chrome or Firefox.
+                </h3>
+                <section
+                        class="col-lg-offset-4 col-lg-5"
+                        ng-show="answering_webrtc">
+                    <button
+                            ng-click="accept_webrtc();"
+                            class="btn btn-success">
+                        Answer
+                    </button>
+                    <button
+                            class="btn btn-danger">
+                        Decline
+                    </button>
+                </section>
+                <video id="localVideo"></video>
+                <div id="remoteVideos">
+                </div>
+            </section>
+
+
+        </div>
+    </div>
+
+</div>
