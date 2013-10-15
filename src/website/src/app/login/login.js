@@ -23,4 +23,6 @@ angular.module('letspass.login', [
 
 .controller('LoginCtrl', function LoginCtrl ($scope) {
 
+
+
 });

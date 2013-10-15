@@ -47,6 +47,15 @@ angular.module( 'ngBoilerplate.home', [
  */
 .controller( 'HomeCtrl', function HomeController( $scope, socket, ruser ) {
 
+        $(document).ready(function() {
+            $('[data-toggle=offcanvas-right]').click(function() {
+                $('.row-offcanvas').toggleClass('active-right');
+            });
+            $('[data-toggle=offcanvas-left]').click(function() {
+                $('.row-offcanvas').toggleClass('active-left');
+            });
+        });
+
         if (window.mozRTCPeerConnection) {
             $scope.webrtc_browser = true;
         } else if (window.webkitRTCPeerConnection) {
@@ -75,7 +84,10 @@ angular.module( 'ngBoilerplate.home', [
                 // the id/element dom element that will hold remote videos
                 remoteVideosEl: 'remoteVideos',
                 // immediately ask for camera access
-                autoRequestMedia: true
+                autoRequestMedia: true,
+                media: {
+                    audio:true
+                }
             });
 
             webrtc.on('readyToCall', function () {
