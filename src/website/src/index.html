@@ -7,8 +7,9 @@
       <base href="/"></base>
 
     <meta name="HandheldFriendly" content="True">
-    <meta name="MobileOptimized" content="320">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="MobileOptimized" content="width=device-width">
+    <meta name="viewport" content="width=device-width; minimum-scale=1; initial-scale=1; maximum-scale=1">
+    <!--<meta name="apple-mobile-web-app-capable" content="yes">-->
 
     <!-- social media tags -->
     <meta name="twitter:card" content="summary">
@@ -25,12 +26,14 @@
 
     <!-- font awesome from BootstrapCDN -->
     <link href="http://netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
+      <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
 
     <!-- compiled CSS --><% styles.forEach( function ( file ) { %>
     <link rel="stylesheet" type="text/css" href="<%= file %>" /><% }); %>
 
     <script src="http://simplewebrtc.com/latest.js"></script>
     <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+      <script src="http://cdn.embed.ly/jquery.embedly-3.1.1.min.js" type="text/javascript"></script>
     <script src="/socket.io/socket.io.js"></script>
     <!-- compiled JavaScript --><% scripts.forEach( function ( file ) { %>
     <script type="text/javascript" src="<%= file %>"></script><% }); %>
@@ -41,7 +44,6 @@
     </script>
   </head>
   <body>
-
     <div class="x-full-height" ui-view="main"></div>
 
   </body>

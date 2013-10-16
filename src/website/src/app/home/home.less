@@ -3,9 +3,12 @@
 }
 
 .x-user-container{
-  background: url('http://f.cl.ly/items/3P3g3Y3T100N0Z2V2B2w/Screen%20Shot%202013-10-11%20at%2016.38.23.png');
-  background-position: 0 -40px;
+  background: url('http://i1.ytimg.com/vi/ZXyYVoDAvGk/maxresdefault.jpg') no-repeat;
+  background-position: 0 -10px;
+  width: 100%;
   border-bottom: 0px;
+  background-size: 100%;
+  color: white;
 }
 
 .panel-heading.x-usr-group{
@@ -61,6 +64,10 @@
    * --------------------------------------------------
    */
 @media screen and (max-width: 767px) {
+  .padding-buddy-list{
+    padding-left: 15px;
+  }
+
   .row-offcanvas {
     position: relative;
     -webkit-transition: all 0.25s ease-out;
@@ -70,25 +77,88 @@
 
   .row-offcanvas
   .sidebar-offcanvas-right {
-    right: -50%; /* 6 columns */
+    right: -70%; /* 6 columns */
   }
 
   .row-offcanvas
   .sidebar-offcanvas-left {
-    left: -50%; /* 6 columns */
+    left: -70%; /* 6 columns */
   }
 
   .row-offcanvas.active-right {
-    right: 50%; /* 6 columns */
+    right: 70%; /* 6 columns */
   }
 
   .row-offcanvas.active-left {
-    left: 50%; /* 6 columns */
+    left: 70%; /* 6 columns */
   }
 
   .sidebar-offcanvas-left, .sidebar-offcanvas-right {
     position: absolute;
     top: 0;
-    width: 50%; /* 6 columns */
+    width: 70%; /* 6 columns */
   }
+}
+
+/* Filter list
+   ========================================================================== */
+ul.filter-list{
+  list-style: none;
+  padding-left: 15px;
+}
+
+ul.filter-list .filter-item:hover {
+  background-color: #eee;
+}
+
+ul.filter-list .filter-item{
+  font-size: 12px;
+  padding: 4px 10px;
+  margin: 0 0 2px 0;
+  color: #777;
+  white-space: nowrap;
+  text-decoration: none;
+  border-radius: 3px;
+}
+
+ul.color-label-list .color{
+  display: block;
+  float: left;
+  margin-left: -5px;
+  margin-right: 4px;
+  width: 6px;
+  height: 15px;
+  border-radius: 3px;
+}
+
+ul.color-label-list .color-label.selected {
+  font-weight: bold;
+  -webkit-font-smoothing: antialised;
+}
+
+.labelstyle-cccccc.selected {
+  background-color: #cccccc !important;
+}
+.labelstyle-bfd4f2.selected{
+  background-color: #bfd4f2 !important;
+}
+.labelstyle-fbca04.selected{
+  background-color: #fbca04 !important;
+}
+.labelstyle-5319e7.selected{
+  background-color: #5319e7 !important;
+  color: white !important;
+}
+.labelstyle-cc317c.selected{
+  background-color: #cc317c !important;
+  color: white !important;
+}
+.labelstyle-fc2929.selected{
+  background-color: #fc2929 !important;
+  color: white !important;
+}
+
+.popover {
+  max-width: none !important;
+  width: 90%;
 }

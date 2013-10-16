@@ -1,8 +1,8 @@
 <div class="container x-full-height">
 
-<div class="row row-offcanvas row-offcanvas-right x-full-height">
+<div class="row row-offcanvas x-full-height">
 
-    <div class="col-xs-6 col-sm-3 sidebar-offcanvas-left x-no-padding x-full-height" role="navigation">
+    <div class="col-xs-6 col-sm-3 sidebar-offcanvas-left x-no-padding padding-buddy-list x-full-height" role="navigation">
 
             <div class="panel panel-default x-full-height">
                 <!-- Default panel contents -->
@@ -29,12 +29,25 @@
                     <li
                             ng-repeat="(key, username) in users"
                             class="list-group-item">
-                        {{username}}
-                        <i class="icon icon-phone x-webrtc-on pull-right"></i>
-                        <i class="icon icon-circle x-online pull-right"></i>
-                        <button
-                                ng-click="offerWebRTC(username)"
-                                class="btn btn-success">Call</button>
+                        <p>
+                            {{username}}
+                            <i style="position: absolute;right: 10px; top: 50%;margin-top: -11px;"
+                               class="icon-laptop"></i>
+                        </p>
+
+
+
+                    </li>
+                    <li
+                            class="list-group-item">
+                        <p>
+                            Hello
+                            <i style="position: absolute;right: 10px; top: 50%;margin-top: -11px;"
+                               class="glyphicon glyphicon-phone"></i>
+                        </p>
+
+
+
                     </li>
                 </ul>
             </div>
@@ -46,13 +59,50 @@
         <div class="panel panel-default x-full-height">
             <!-- Default panel contents -->
             <div class="panel-heading x-usr-group">
-                <button type="button" class="btn btn-primary btn-xs visible-xs pull-left" data-toggle="offcanvas-left">
-                    Toggle Left
-                </button>
-                Feed
-                <button type="button" class="btn btn-primary btn-xs visible-xs pull-right" data-toggle="offcanvas-right">
-                    Toggle Right
-                </button>
+
+                <em class="hidden-xs">
+                    Feed
+                </em>
+
+
+                <section
+                        class="visible-xs" style="height: 20px;position: relative;font-size: 20px;">
+                    <i
+                            style="cursor: pointer;position: absolute;left: 10px;"
+                            class="glyphicon glyphicon-user"
+                            data-toggle="offcanvas-left">
+                    </i>
+
+
+                    <span
+                            style="cursor: pointer;position: absolute;left: 50%;margin-left: -7px;"
+                            data-container="body"
+                            data-placement="bottom"
+                            class="glyphicon glyphicon-inbox"
+                            popover></span>
+
+
+
+                </section>
+
+
+
+            </div>
+
+            <div class="panel-heading x-usr-group">
+                <form>
+                    <div class="input-group">
+                        <input type="text" class="form-control" ng-model="message">
+                      <span class="input-group-btn">
+                        <button
+                                ng-click="sendMessage(message);"
+                                class="btn btn-default"
+                                type="submit">
+                            Publish
+                        </button>
+                      </span>
+                    </div>
+                </form>
             </div>
 
 
@@ -65,32 +115,20 @@
                         class="well well-sm">
                     <div ng-class="{'text-right': message.me}">
                         <small>{{message.name}}:</small>
-                        <p> {{message.text}} </p>
+                        <p ng-bind-html-unsafe="message.text"></p>
                     </div>
                 </div>
 
             </section>
 
+            <a href="http://google.com" class="oembed"></a>
 
-            <div class="panel-heading x-usr-group">
-                <form>
-                    <div class="input-group">
-                        <input type="text" class="form-control" ng-model="message">
-                      <span class="input-group-btn">
-                        <button
-                                ng-click="sendMessage(message);"
-                                class="btn btn-default"
-                                type="submit">
-                            Send
-                        </button>
-                      </span>
-                    </div>
-                </form>
-            </div>
+
+
         </div>
     </div><!--/span-->
 
-    <div class="col-xs-6 col-sm-4 sidebar-offcanvas-right x-no-padding" role="navigation">
+    <div class="col-xs-6 col-sm-4 sidebar-offcanvas-right x-no-padding x-full-height hidden-xs" role="navigation">
         <section>
             <div class="panel panel-default">
                 <!-- Default panel contents -->
@@ -98,58 +136,61 @@
                     Helping Others
                 </div>
                 <div class="panel-heading x-nav-issues">
-                    Scheduled Conversations
+                    Issues
                     <button type="button"
-                            class="btn btn-primary btn-xs pull-right">
-                        Add New
+                            class="btn btn-primary btn-xs pull-right"
+                            ng-click="toggleForm();">
+                        {{ button }}
                     </button>
                 </div>
 
-                <!-- List group -->
-                <section id="js-helping-others">
-                    <ul class="list-group x-list-group">
-                        <li class="list-group-item">
-                            <div>
-                                <strong class="list-group-item-heading">I don't understand closures</strong>
-                                <span class="label label-primary">JavaScript</span>
-                                <span class="label label-warning">Homework</span>
-                                <button class="btn btn-success pull-right">Call Now</button>
-                            </div>
-                            <small class="list-group-item-text">Open by James Nocentini</small>
-                        </li>
-                        <li class="list-group-item">
-                            <div>
-                                <strong class="list-group-item-heading">I don't understand closures</strong>
-                                <span class="label label-primary">JavaScript</span>
-                                <span class="label label-warning">Homework</span>
-                                <button class="btn btn-default pull-right">Offline</button>
-                            </div>
-                            <small class="list-group-item-text">Open by James Nocentini</small>
-                        </li>
-                        <li class="list-group-item">
-                            <div>
-                                <strong class="list-group-item-heading">I don't understand closures</strong>
-                                <span class="label label-primary">JavaScript</span>
-                                <span class="label label-warning">Homework</span>
-                                <button class="btn btn-default pull-right">Offline</button>
-                            </div>
-                            <small class="list-group-item-text">Open by James Nocentini</small>
-                        </li>
-                        <li class="list-group-item">
-                            <div>
-                                <strong class="list-group-item-heading">I don't understand closures</strong>
-                                <span class="label label-primary">JavaScript</span>
-                                <span class="label label-warning">Homework</span>
-                                <button class="btn btn-success pull-right">Call Now</button>
-                            </div>
-                            <small class="list-group-item-text">Open by James Nocentini</small>
-                        </li>
 
-                    </ul>
-                </section>
 
             </div>
         </section>
+
+        <section ng-switch="button">
+            <section id="js-helping-others" ng-switch-when="Add New">
+                <ul class="list-group x-list-group">
+                    <li class="list-group-item" ng-repeat="issue in issues">
+                        <div>
+                            <strong class="list-group-item-heading">{{ issue.title }}</strong>
+                        </div>
+                        <section>
+                            <span ng-repeat="tag in issue.labels"
+                                  data="{{ tag }}"
+                                  class="{{ 'label label-primary selected labelstyle-' + tag.split('@')[1] }}">{{ tag.split('@')[0] }}</span>
+                            <button class="btn btn-success btn-xs pull-right hidden-xs">Online</button>
+                        </section>
+                        <small class="list-group-item-text">Opened by {{ issue.user_name }}</small>
+                    </li>
+                </ul>
+            </section>
+
+            <section ng-switch-when="Back" style="padding: 0 15px;">
+                    <form action="/1.0/issues" method="post">
+                        <label>New Issue</label>
+                        <input type="text" class="form-control" placeholder="Title" name="issue[title]">
+                        <label>Tags</label>
+
+                        <ul class="color-label-list filter-list">
+
+                            <li ng-repeat="tag in tags">
+                                <a highlight title="{{tag.title}}" hexcolor="{{tag.color}}"
+                                   class="col-sm-6 filter-item color-label">
+                                    <input style="display: none;" type="checkbox" value="{{title + '@' + hexcolor}}" name="issue[labels][]">
+                                    <span class="color">&nbsp;</span>
+                                    <span class="name">{{title}}</span>
+                                </a>
+                            </li>
+
+                        </ul>
+                        <button type="submit" class="btn btn-success btn-sm">Submit new issue</button>
+                    </form>
+            </section>
+        </section>
+
+
 
         <section id="js-webrtc" class="x-audio-chat">
 
@@ -177,7 +218,7 @@
                     Decline
                 </button>
             </section>
-            <video id="localVideo"></video>
+            <!--<video id="localVideo"></video>-->
             <div id="remoteVideos">
             </div>
         </section>

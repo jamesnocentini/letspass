@@ -1,0 +1,14 @@
+<ul class="list-group x-list-group">
+    <li class="list-group-item" ng-repeat="issue in issues">
+        <div>
+            <strong class="list-group-item-heading">{{ issue.title }}</strong>
+        </div>
+        <section>
+                            <span ng-repeat="tag in issue.labels"
+                                  data="{{ tag }}"
+                                  class="{{ 'label label-primary selected labelstyle-' + tag.split('@')[1] }}">{{ tag.split('@')[0] }}</span>
+            <button class="btn btn-success btn-xs pull-right hidden-xs">Online</button>
+        </section>
+        <small class="list-group-item-text">Opened by {{ issue.user_name }}</small>
+    </li>
+</ul>

@@ -16,7 +16,8 @@ angular.module( 'ngBoilerplate.home', [
   'ui.state',
   'plusOne',
   'lp-socket-service',
-		'lp-user-service'
+    'lp-user-service',
+        'issue-service'
 ])
 
 /**
@@ -45,16 +46,72 @@ angular.module( 'ngBoilerplate.home', [
 /**
  * And of course we define a controller for our route.
  */
-.controller( 'HomeCtrl', function HomeController( $scope, socket, ruser ) {
+.controller( 'HomeCtrl', function HomeController( $scope, socket, ruser, Issue ) {
 
-        $(document).ready(function() {
+
+        Issue.getAll().then(
+            function (data) {
+                console.log(data);
+                $scope.issues = data;
+            }
+        )
+
+
             $('[data-toggle=offcanvas-right]').click(function() {
                 $('.row-offcanvas').toggleClass('active-right');
             });
             $('[data-toggle=offcanvas-left]').click(function() {
                 $('.row-offcanvas').toggleClass('active-left');
             });
-        });
+            $('[data-toggle="popover"]').popover(
+                {
+                    trigger: 'hover',
+                    html: true
+                }
+            );
+
+        $('.oembed').embedly({key: '5eec7cc8fc574a09b4d312009f9fef9b'});
+
+
+        $scope.tags = [
+            {
+                color: 'cccccc',
+                title: 'javascript'
+            },
+            {
+                color: 'bfd4f2',
+                title: 'canvas'
+            },
+            {
+                color: 'fbca04',
+                title: 'webworkers'
+            },
+            {
+                color: '5319e7',
+                title: 'microdata'
+            },
+            {
+                color: 'cc317c',
+                title: 'question'
+            },
+            {
+                color: 'fc2929',
+                title: 'error'
+            }
+        ];
+
+
+
+        $scope.button = 'Back';
+        $scope.toggleForm = function() {
+            if($scope.button === 'Add New') {
+                $scope.button = 'Back';
+            } else {
+                $scope.button = 'Add New';
+            }
+        };
+
+
 
         if (window.mozRTCPeerConnection) {
             $scope.webrtc_browser = true;
@@ -118,16 +175,30 @@ angular.module( 'ngBoilerplate.home', [
         };
 
 		socket.on('updatechat', function (name, data) {
+
+            data = data.replace(/(\s|>|^)(https?:[^\s<]*)/igm,'$1<div><a href="$2" class="oembed">$2</a></div>');
+
             if(name === ruser.name) {
-                $scope.messages.push({me: true, name: 'Me', text: data});
+                $scope.messages.unshift({me: true, name: 'Me', text: data});
             } else {
-                $scope.messages.push({me: false, name: name, text: data})
-            }
+                $scope.messages.unshift({me: false, name: name, text: data})
+            };
+
+
 
 			setTimeout(
 				function() {
+                    console.log('hey')
+                    $('.oembed').embedly(
+                        {
+                            maxwidth: 400,
+                            maxheight: 400,
+                            query: {maxwidth: 300},
+                            key: '5eec7cc8fc574a09b4d312009f9fef9b'
+                        }
+                    );
 					$('#js-feed').scrollTop($('#js-feed')[0].scrollHeight);
-				}, 100
+				}, 1000
 			)
 		});
 

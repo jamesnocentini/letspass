@@ -11,5 +11,9 @@ module.exports = function(app) {
 
     app.get('/1.0/autologin', auth, UM.login);
 
+    app.post('/1.0/issues', auth, GM.newIssue);
+
+    app.get('/1.0/issues', auth, GM.getIssues);
+
 
 };

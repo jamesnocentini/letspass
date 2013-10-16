@@ -7,7 +7,11 @@ angular.module( 'ngBoilerplate', [
   'ui.state',
   'ui.route',
   'lp-socket-service',
-  'lp-user-service'
+  'lp-user-service',
+        'popover',
+        'highlight',
+        'labelIssue',
+        'issue-service'
 ])
 
 .config( function myAppConfig ( $stateProvider, $urlRouterProvider, $locationProvider ) {
@@ -34,10 +38,10 @@ angular.module( 'ngBoilerplate', [
     console.log(window.innerHeight);
         var height = window.innerHeight;
         setTimeout(function() {
-            document.getElementById('js-buddy-list').style.height = height - 120 + 'px';
-            document.getElementById('js-feed').style.height = height - 40 - 55 + 'px';
+//            document.getElementById('js-buddy-list').style.height = height - 120 + 'px';
+//            document.getElementById('js-feed').style.height = height - 40 - 55 + 'px';
             document.getElementById('js-helping-others').style.height = height / 2 - 80 + 'px';
-            document.getElementById('js-webrtc').style.height = height / 2 - 80 + 'px';
+//            document.getElementById('js-webrtc').style.height = height / 2 - 80 + 'px';
         }, 500)
     $scope.$watch($scope.height, function() {
         console.log('HEY')
