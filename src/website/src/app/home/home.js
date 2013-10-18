@@ -49,9 +49,18 @@ angular.module( 'ngBoilerplate.home', [
 .controller( 'HomeCtrl', function HomeController( $scope, socket, ruser, Issue, $http ) {
 
 
-//        $('#js-feed').slimScroll({
-//            height: '200px'
-//        });
+        setTimeout(function() {
+            $('#js-feed').slimScroll({
+                height: '500px'
+            });
+            $('#js-buddy-list').slimScroll({
+                height: '500px'
+            });
+            $('#js-helping-others').slimScroll({
+                height: '250px'
+            });
+        }, 500);
+
 
 
         // OpenTok credentials
@@ -153,15 +162,6 @@ angular.module( 'ngBoilerplate.home', [
             }
         ];
 
-        //Show - Hide the form to add an Issue
-        $scope.button = 'Add New';
-        $scope.toggleForm = function() {
-            if($scope.button === 'Add New') {
-                $scope.button = 'Back';
-            } else {
-                $scope.button = 'Add New';
-            }
-        };
 
         if (window.mozRTCPeerConnection) {
             $scope.webrtc_browser = true;
@@ -223,7 +223,9 @@ angular.module( 'ngBoilerplate.home', [
 		socket.on('updatechat', function (name, data) {
             console.log('FOUND LINKS IN MESSAGE :: ' + data.match(/(\s|>|^)(https?:[^\s<]*)/igm));
             //find links and replace with anchor tag - add class
-            data = data.replace(/(\s|>|^)(https?:[^\s<]*)/igm,'$1<div><a href="$2" class="oembed">$2</a></div>');
+            data = data.replace(/(\s|>|^)(https?:[^\s<]*)/igm,'$1<div><a target="_blank" href="$2" class="oembed">$2</a></div>');
+            data = data.replace(/\r?\n/g, "<br>");
+
 
             //check if I sent the message
             if(name === ruser.name) {
@@ -231,6 +233,12 @@ angular.module( 'ngBoilerplate.home', [
             } else {
                 $scope.messages.unshift({me: false, name: name, text: data})
             };
+
+//            setTimeout(function() {
+//                $('#js-feed').slimScroll({
+//                    height: '200px'
+//                });
+//            }, 500);
 
 
 			setTimeout(
@@ -266,22 +274,16 @@ angular.module( 'ngBoilerplate.home', [
                             }
                         }
                     );
-					$('#js-feed').scrollTop($('#js-feed')[0].scrollHeight);
-				}, 1000
+					$('#js-feed').scrollTop($('#js-feed')[0] = 0);
+				}, 100
 			)
 		});
 
-        //Send message to server and reset textarea
+        //send message to server and reset textarea
 		$scope.sendMessage = function(text) {
 			$scope.message = '';
+            text = text.replace(/\r?\n/g, "<br>");
 			socket.emit('sendchat', text);
-			console.log($('#js-feed')[0].scrollHeight)
-			setTimeout(
-				function() {
-					$('#js-feed').scrollTop($('#js-feed')[0].scrollHeight);
-				}, 100
-			)
-
 		};
 
         //initialize the users object
@@ -293,16 +295,27 @@ angular.module( 'ngBoilerplate.home', [
 
         //initialize the new_issue object
         $scope.new_issue = {};
+        $scope.new_issue.labels = {};
+
+        //Show - Hide the form to add an Issue
+        $scope.button = 'Add New';
+        $scope.toggleForm = function() {
+            if($scope.button === 'Add New') {
+                $scope.button = 'Back';
+            } else {
+                $scope.button = 'Add New';
+            }
+        };
 
         //create a new issue
         $scope.createIssue = function() {
            var data = {title: $scope.new_issue.title, labels: []};
            //loop new_issue (looking for selected tags)
-           for (key in $scope.new_issue) {
-               if(!$scope.new_issue[key]) {
+           for (key in $scope.new_issue.labels) {
+               if(!$scope.new_issue.labels[key]) {
 
                } else {
-                   data.labels.push($scope.new_issue[key])
+                   data.labels.push($scope.new_issue.labels[key])
                }
            };
 
@@ -338,7 +351,13 @@ angular.module( 'ngBoilerplate.home', [
                     //post the data object to server to create issue
                     Issue.createIssue(data)
                         .then(function(res) {
-
+                            //Get all issues from node api
+                            Issue.getAll().then(
+                                function (data) {
+                                    $scope.issues = data;
+                                    $scope.button = 'Add New';
+                                }
+                            )
                         },
                         function(err) {
 

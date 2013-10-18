@@ -27,7 +27,7 @@
                 <!-- List group -->
                 <ul
                         id="js-buddy-list"
-                        class="list-group x-list-group x-scroll-y">
+                        class="list-group x-list-group">
                     <li
                             ng-repeat="(key, username) in users"
                             class="list-group-item">
@@ -133,7 +133,7 @@
 
             <section
                     id="js-feed"
-                    class="x-feed x-scroll-y">
+                    class="x-feed">
 
 
                 <!--<div -->
@@ -146,14 +146,14 @@
 
                 <!--</div>-->
 
-                <div
-                        ng-repeat="message in messages"
-                        class="well well-sm">
-                    <div ng-class="{'text-right': message.me}">
-                        <small>{{message.name}}:</small>
-                        <p ng-bind-html-unsafe="message.text"></p>
+                    <div
+                            ng-repeat="message in messages"
+                            class="well well-sm">
+                        <div ng-class="{'text-right': message.me}">
+                            <small>{{message.name}}:</small>
+                            <p ng-bind-html-unsafe="message.text"></p>
+                        </div>
                     </div>
-                </div>
 
             </section>
 
@@ -173,7 +173,7 @@
                     Hangouts
                 </div>
                 <div class="panel-heading x-nav-issues x-custom-bg">
-                    <strong>Issues</strong>
+                    <strong>Scheduled hangouts</strong>
                     <button type="button"
                             class="btn btn-primary btn-xs pull-right"
                             ng-click="toggleForm();">
@@ -186,8 +186,8 @@
             </div>
         </section>
 
-        <section ng-switch="button">
-            <section id="js-helping-others" ng-switch-when="Add New">
+        <section id="js-helping-others" ng-switch="button">
+            <section ng-switch-when="Add New">
                 <ul
                         style="margin-bottom: 0;"
                         class="list-group">
@@ -228,8 +228,8 @@
                                             id={{tag.title}}
                                             style="display: none;"
                                             type="checkbox"
-                                            ng-init="new_issue[tag.title] = false"
-                                            ng-change="new_issue[tag.title] = tag.title + '@' + tag.color"
+                                            ng-init="new_issue.labels[tag.title] = false"
+                                            ng-change="new_issue.labels[tag.title] = tag.title + '@' + tag.color"
                                             ng-model="tag.selected">
                                     <!--value="{{title + '@' + hexcolor}}"-->
                                     <span
