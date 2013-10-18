@@ -49,21 +49,24 @@ angular.module( 'ngBoilerplate.home', [
 .controller( 'HomeCtrl', function HomeController( $scope, socket, ruser, Issue, $http ) {
 
 
+        $('#js-feed').slimScroll({
+            height: '200px'
+        });
 
 
+        // OpenTok credentials
         var apiKey = '44285682';
-
         var secret = '24f997d6218bd292bf7a2a5deb11d2bc97c8a008';
 
-//        var sessionId = '2_MX40NDI4NTY4Mn5-VGh1IE9jdCAxNyAwMzo1NDo1NSBQRFQgMjAxM34wLjYxMjIwOTc0fg';
+        // Embedly API Key
+        $.embedly.defaults.key = '5eec7cc8fc574a09b4d312009f9fef9b';
 
-
-
+        //message array to hold the list of messages
+        $scope.messages = [];
 
         $scope.joinSession = function(sessionId) {
+            // Initializes the session and return the Session object
             var session = TB.initSession(sessionId);
-
-
 
             // Token Params
             var secondsInDay = 86400;
@@ -72,32 +75,30 @@ angular.module( 'ngBoilerplate.home', [
             var role = "publisher";
             var data = "bob";
 
-//        data = escape(data);
             var rand = Math.floor(Math.random()*999999);
             var dataString =  "session_id="+sessionId+"&create_time="+timeNow+"&expire_time="+expire+"&role="+role+"&connection_data="+data+"&nonce="+rand;
 
-            // Encryption
+            // Encryption - using jquery plugin
             var hmac = CryptoJS.algo.HMAC.create(CryptoJS.algo.SHA1, secret);
             hmac.update( dataString );
             hash = hmac.finalize();
 
             preCoded = "partner_id="+apiKey+"&sig="+hash+":"+dataString;
+            // This token is send to the opentok API when connecting to a session
             var token = "T1=="+$.base64.encode( preCoded );
 
-
+            // Connect to a session
             session.connect(apiKey, token);
 
-
-
+            //When connected publish the local stream
             session.on('sessionConnected', function(event) {
                 session.publish('myCamera', { publishVideo: true, width: 150, height: 113});
                 addStreams(event.streams);
             });
 
+            //When a stream has been added subscribe to it
             session.on('streamCreated', function (event) {
-
                 addStreams(event.streams);
-
             });
 
             function addStreams(streams) {
@@ -107,35 +108,24 @@ angular.module( 'ngBoilerplate.home', [
                     }
                 }
             };
-        }
+        };
 
-
-
-
+        //Get all issues from node api
         Issue.getAll().then(
             function (data) {
-                console.log(data);
                 $scope.issues = data;
             }
         )
 
+        //Bootstrap - jQuery code to enable the off-canvas layout
+        $('[data-toggle=offcanvas-right]').click(function() {
+            $('.row-offcanvas').toggleClass('active-right');
+        });
+        $('[data-toggle=offcanvas-left]').click(function() {
+            $('.row-offcanvas').toggleClass('active-left');
+        });
 
-            $('[data-toggle=offcanvas-right]').click(function() {
-                $('.row-offcanvas').toggleClass('active-right');
-            });
-            $('[data-toggle=offcanvas-left]').click(function() {
-                $('.row-offcanvas').toggleClass('active-left');
-            });
-            $('[data-toggle="popover"]').popover(
-                {
-                    trigger: 'hover',
-                    html: true
-                }
-            );
-
-
-
-
+        //Init tags for the W3C. Can change later
         $scope.tags = [
             {
                 color: 'cccccc',
@@ -163,8 +153,7 @@ angular.module( 'ngBoilerplate.home', [
             }
         ];
 
-
-
+        //Show - Hide the form to add an Issue
         $scope.button = 'Add New';
         $scope.toggleForm = function() {
             if($scope.button === 'Add New') {
@@ -174,30 +163,24 @@ angular.module( 'ngBoilerplate.home', [
             }
         };
 
-
-
         if (window.mozRTCPeerConnection) {
             $scope.webrtc_browser = true;
         } else if (window.webkitRTCPeerConnection) {
             $scope.webrtc_browser = true;
         } else {
             $scope.webrtc_browser = false;
-        }
-
-		$scope.messages = [];
+        };
 
 		// on connection to server, ask for user's name with an anonymous callback
 		socket.on('connect', function(){
-			// call the server-side function 'adduser' and send one parameter (value of prompt)
+			// call the server-side function 'adduser' and send one parameter (name of user)
 			socket.emit('adduser', ruser.name);
 		});
 
 
         $scope.offerWebRTC = function(to) {
-
             var data = {from: ruser.name, to: to};
             socket.emit('webRTC', data);
-
             var webrtc = new SimpleWebRTC({
                 // the id/element dom element that will hold "our" video
                 localVideoEl: 'localVideo',
@@ -209,7 +192,6 @@ angular.module( 'ngBoilerplate.home', [
                     audio:true
                 }
             });
-
             webrtc.on('readyToCall', function () {
                 // you can name it anything
                 webrtc.joinRoom('test');
@@ -237,15 +219,13 @@ angular.module( 'ngBoilerplate.home', [
             });
         };
 
+        //server notifies us of new message
 		socket.on('updatechat', function (name, data) {
-
-            console.log('LINK :: ' + data.match(/(\s|>|^)(https?:[^\s<]*)/igm));
-
+            console.log('FOUND LINKS IN MESSAGE :: ' + data.match(/(\s|>|^)(https?:[^\s<]*)/igm));
+            //find links and replace with anchor tag - add class
             data = data.replace(/(\s|>|^)(https?:[^\s<]*)/igm,'$1<div><a href="$2" class="oembed">$2</a></div>');
 
-
-
-
+            //check if I sent the message
             if(name === ruser.name) {
                 $scope.messages.unshift({me: true, name: 'Me', text: data});
             } else {
@@ -253,16 +233,37 @@ angular.module( 'ngBoilerplate.home', [
             };
 
 
-
 			setTimeout(
 				function() {
-                    console.log('hey')
+//                    $('.oembed').embedly(
+//                        {
+//                            maxwidth: 400,
+//                            maxheight: 400,
+//                            query: {maxwidth: 300},
+//                            key: '5eec7cc8fc574a09b4d312009f9fef9b'
+//                        }
+//                    );
                     $('.oembed').embedly(
                         {
-                            maxwidth: 400,
-                            maxheight: 400,
-                            query: {maxwidth: 300},
-                            key: '5eec7cc8fc574a09b4d312009f9fef9b'
+                            display: function(obj) {
+                                //Overwrite the default display
+                                if (obj.type === 'video' || obj.type === 'rich') {
+                                    //Figure out the percent ratio for the padding. This is
+                                    //(height / width) * 100
+                                    var ratio = ((obj.height/obj.width)*100).toPrecision(4) + '%';
+
+                                    //Wrap the embed in a responsive object div. See the CSS here!
+                                    var div = $('<div class="responsive-object">').css({
+                                        paddingBottom: ratio
+                                    });
+
+                                    //Add the embed to the div
+                                    div.html(obj.html);
+
+                                    //Replace the element with the div
+                                    $(this).replaceWith(div);
+                                }
+                            }
                         }
                     );
 					$('#js-feed').scrollTop($('#js-feed')[0].scrollHeight);
@@ -270,69 +271,7 @@ angular.module( 'ngBoilerplate.home', [
 			)
 		});
 
-        $.valHooks.textarea = {
-            get: function(elem) {
-                return elem.value.replace(/\r?\n/g, "\r\n");
-            }
-        };
-
-        $scope.checkForLinks = function() {
-
-            var links = $scope.post.message.match(/(\s|>|^)(https?:[^\s<]*)/igm);
-
-            if(!links) {
-
-                $scope.preview.message = $scope.post.message.replace(/\r?\n/g, "<br>");
-
-            } else {
-
-                var data = $scope.post.message.replace(/(\s|>|^)(https?:[^\s<]*)/igm,'$1<div><a href="$2" class="oembed">$2</a></div>');
-
-                $scope.preview.message = data;
-                setTimeout(
-                    function() {
-                        console.log('hey')
-                        $('.oembed').embedly(
-                            {
-                                maxwidth: 400,
-                                maxheight: 400,
-                                query: {maxwidth: 50},
-                                key: '5eec7cc8fc574a09b4d312009f9fef9b'
-                            }
-                        );
-                        $('#js-feed').scrollTop($('#js-feed')[0].scrollHeight);
-                    }, 1000
-                )
-
-
-//                var deferred = $.embedly.extract(links, {
-//
-//                }).progress(function (data) {
-//
-//                }).done(function(results) {
-//                        console.log(results);
-//                        $scope.$apply(function() {
-//                                $scope.preview.message = $scope.post.message.replace(/\r?\n/g, "<br>")
-//                        });
-//                });
-            }
-        }
-
-        $scope.preview = {};
-        $scope.post = {};
-
-        $.embedly.defaults.key = '5eec7cc8fc574a09b4d312009f9fef9b';
-
-        var deferred = $.embedly.extract('http://google.com', {
-
-        }).progress(function (data) {
-
-        }).done(function(results) {
-                console.log(results);
-        });
-
-
-
+        //Send message to server and reset textarea
 		$scope.sendMessage = function(text) {
 			$scope.message = '';
 			socket.emit('sendchat', text);
@@ -345,16 +284,20 @@ angular.module( 'ngBoilerplate.home', [
 
 		};
 
+        //initialize the users object
 		$scope.users = {};
+        //receives list of users connected from server
 		socket.on('updateusers', function(usernames) {
 			$scope.users = usernames;
 		});
 
+        //initialize the new_issue object
         $scope.new_issue = {};
 
+        //create a new issue
         $scope.createIssue = function() {
-
            var data = {title: $scope.new_issue.title, labels: []};
+           //loop new_issue (looking for selected tags)
            for (key in $scope.new_issue) {
                if(!$scope.new_issue[key]) {
 
@@ -364,6 +307,7 @@ angular.module( 'ngBoilerplate.home', [
            };
 
 
+            //post request to get a sessionId from opentok api
             $http(
                 {
                     method: 'POST',
@@ -371,16 +315,13 @@ angular.module( 'ngBoilerplate.home', [
                     headers: {'X-TB-PARTNER-AUTH': apiKey + ':' + secret}
                 }
             ).then(function(result) {
-                    console.log('Hey', result);
+                    console.log('XML received :: ' + result);
                     return result.data;
                 })
                 .then(
                 function(xml_string) {
-
-                    console.log('Hey', data)
-
-                    if (window.DOMParser)
-                    {
+                    //parse xml
+                    if (window.DOMParser) {
                         parser=new DOMParser();
                         xmlDoc=parser.parseFromString(xml_string,"text/xml");
                     } else  { // Internet Explorer
@@ -388,35 +329,23 @@ angular.module( 'ngBoilerplate.home', [
                         xmlDoc.async=false;
                         xmlDoc.loadXML(xml_string);
                     }
-                    console.log('Session ID: ', xmlDoc.getElementsByTagName('session_id')[0].textContent);
 
                     var sessionId = xmlDoc.getElementsByTagName('session_id')[0].textContent;
+                    console.log('SESSIONID is :: ' + sessionId);
+                    //attach sessionId to data object
                     data.sessionId = sessionId;
 
-                    console.log(data)
-
+                    //post the data object to server to create issue
                     Issue.createIssue(data)
-                        .then(function() {
+                        .then(function(res) {
 
                         },
-                        {
+                        function(err) {
 
                         })
-                },
-                function(err) {
-
-                }
-            )
-
-
-
-
-
-
-        }
-
+                });
+        };
 
 })
-
 ;
 
