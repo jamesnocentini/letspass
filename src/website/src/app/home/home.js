@@ -49,9 +49,9 @@ angular.module( 'ngBoilerplate.home', [
 .controller( 'HomeCtrl', function HomeController( $scope, socket, ruser, Issue, $http ) {
 
 
-        $('#js-feed').slimScroll({
-            height: '200px'
-        });
+//        $('#js-feed').slimScroll({
+//            height: '200px'
+//        });
 
 
         // OpenTok credentials
