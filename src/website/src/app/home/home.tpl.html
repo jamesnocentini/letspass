@@ -6,7 +6,9 @@
 
             <div class="panel panel-default x-full-height">
                 <!-- Default panel contents -->
-                <div class="panel-heading x-usr-group">
+                <div
+                        style="border-top-right-radius: 0;"
+                        class="panel-heading x-usr-group">
                     <strong>W3C Campus</strong>
                 </div>
                 <div class="panel-body x-user-container">
@@ -56,13 +58,17 @@
 
 
     <div class="col-xs-12 col-sm-5 x-no-padding x-full-height">
-        <div class="panel panel-default x-full-height">
+        <div
+                style="border-left: 0;"
+                class="panel panel-default x-full-height">
             <!-- Default panel contents -->
-            <div class="panel-heading x-usr-group">
+            <div
+                    style="border-top-left-radius: 0;border-top-right-radius: 0;"
+                    class="panel-heading x-usr-group">
 
-                <em class="hidden-xs">
+                <div class="hidden-xs">
                     Feed
-                </em>
+                </div>
 
 
                 <section
@@ -89,10 +95,32 @@
 
             </div>
 
-            <div class="panel-heading x-usr-group">
+            <div class="panel-heading x-usr-group x-feed">
                 <form>
-                    <div class="input-group">
-                        <input type="text" class="form-control" ng-model="message">
+
+                    <div class="hidden-xs">
+                        <textarea
+                                id="textarea"
+                                style="margin-bottom: 10px;"
+                                class="form-control" 
+                                rows="3" 
+                                ng-model="message"></textarea>
+                        <!--<button-->
+                                <!--type="submit"-->
+                                <!--ng-click="checkForLinks();"-->
+                                <!--class="btn btn-default btn-sm">-->
+                            <!--Preview-->
+                        <!--</button>-->
+                        <button
+                                type="submit"
+                                ng-click="sendMessage(message);"
+                                class="btn btn-default btn-sm">
+                                Publish
+                        </button>
+                    </div>
+                    <div class="visible-xs">
+                        <div class="input-group">
+                            <input type="text" class="form-control" ng-model="message">
                       <span class="input-group-btn">
                         <button
                                 ng-click="sendMessage(message);"
@@ -101,7 +129,10 @@
                             Publish
                         </button>
                       </span>
+                        </div>
                     </div>
+
+
                 </form>
             </div>
 
@@ -109,6 +140,17 @@
             <section
                     id="js-feed"
                     class="x-feed x-scroll-y">
+
+
+                <!--<div -->
+                        <!--style="opacity: 0.6;;"-->
+                        <!--class="well well-sm">-->
+                    <!--<div ng-class="text-right">-->
+                        <!--<small>Preview</small>-->
+                        <!--<p ng-bind-html-unsafe="preview.message" id="preview"></p>-->
+                    <!--</div>-->
+
+                <!--</div>-->
 
                 <div
                         ng-repeat="message in messages"
@@ -121,22 +163,23 @@
 
             </section>
 
-            <a href="http://google.com" class="oembed"></a>
-
-
 
         </div>
     </div><!--/span-->
 
     <div class="col-xs-6 col-sm-4 sidebar-offcanvas-right x-no-padding x-full-height hidden-xs" role="navigation">
         <section>
-            <div class="panel panel-default">
+            <div
+                    style="margin-bottom: 0;"
+                    class="panel panel-default">
                 <!-- Default panel contents -->
-                <div class="panel-heading x-usr-group">
-                    Helping Others
+                <div
+                        style="border-top-left-radius: 0;"
+                        class="panel-heading x-usr-group">
+                    Hangouts
                 </div>
-                <div class="panel-heading x-nav-issues">
-                    Issues
+                <div class="panel-heading x-nav-issues x-custom-bg">
+                    <strong>Issues</strong>
                     <button type="button"
                             class="btn btn-primary btn-xs pull-right"
                             ng-click="toggleForm();">
@@ -151,7 +194,9 @@
 
         <section ng-switch="button">
             <section id="js-helping-others" ng-switch-when="Add New">
-                <ul class="list-group x-list-group">
+                <ul
+                        style="margin-bottom: 0;"
+                        class="list-group">
                     <li class="list-group-item" ng-repeat="issue in issues">
                         <div>
                             <strong class="list-group-item-heading">{{ issue.title }}</strong>
@@ -160,7 +205,9 @@
                             <span ng-repeat="tag in issue.labels"
                                   data="{{ tag }}"
                                   class="{{ 'label label-primary selected labelstyle-' + tag.split('@')[1] }}">{{ tag.split('@')[0] }}</span>
-                            <button class="btn btn-success btn-xs pull-right hidden-xs">Online</button>
+                            <button
+                                    ng-click="joinSession(issue.sessionId);"
+                                    class="btn btn-success btn-xs pull-right hidden-xs">Online</button>
                         </section>
                         <small class="list-group-item-text">Opened by {{ issue.user_name }}</small>
                     </li>
@@ -168,20 +215,34 @@
             </section>
 
             <section ng-switch-when="Back" style="padding: 0 15px;">
-                    <form action="/1.0/issues" method="post">
+                    <form
+                            style="margin: 10px 0 20px 0;"
+                            ng-submit="createIssue();">
                         <label>New Issue</label>
-                        <input type="text" class="form-control" placeholder="Title" name="issue[title]">
+                        <input type="text" ng-model="new_issue.title" class="form-control" placeholder="Title">
                         <label>Tags</label>
 
                         <ul class="color-label-list filter-list">
 
                             <li ng-repeat="tag in tags">
-                                <a highlight title="{{tag.title}}" hexcolor="{{tag.color}}"
-                                   class="col-sm-6 filter-item color-label">
-                                    <input style="display: none;" type="checkbox" value="{{title + '@' + hexcolor}}" name="issue[labels][]">
-                                    <span class="color">&nbsp;</span>
-                                    <span class="name">{{title}}</span>
-                                </a>
+                                <label
+                                        for="{{tag.title}}"
+                                        ng-init="tag.selected = false;"
+                                        ng-class="{selected: tag.selected}"
+                                        class="{{ 'col-sm-6 filter-item color-label labelstyle-' + tag.color }}">
+                                    <input
+                                            id={{tag.title}}
+                                            style="display: none;"
+                                            type="checkbox"
+                                            ng-init="new_issue[tag.title] = false"
+                                            ng-change="new_issue[tag.title] = tag.title + '@' + tag.color"
+                                            ng-model="tag.selected">
+                                    <!--value="{{title + '@' + hexcolor}}"-->
+                                    <span
+                                            ng-class="{selected: tag.selected}"
+                                            class="{{ 'color selected labelstyle-' + tag.color}}">&nbsp;</span>
+                                    <span class="name">{{tag.title}}</span>
+                                </label>
                             </li>
 
                         </ul>
@@ -194,9 +255,12 @@
 
         <section id="js-webrtc" class="x-audio-chat">
 
-            <div class="panel panel-default">
-                <div class="panel-heading x-nav-issues">
-                    Action!
+            <div
+                    style="margin-bottom: 0;"
+                    class="panel panel-default">
+                <div class="panel-heading x-nav-issues x-custom-bg">
+
+                    <strong>Action!</strong>
                 </div>
             </div>
 
@@ -205,22 +269,14 @@
                 <br>
                 Please use Chrome or Firefox.
             </h3>
-            <section
-                    class="col-lg-offset-4 col-lg-5"
-                    ng-show="answering_webrtc">
-                <button
-                        ng-click="accept_webrtc();"
-                        class="btn btn-success">
-                    Answer
-                </button>
-                <button
-                        class="btn btn-danger">
-                    Decline
-                </button>
-            </section>
-            <!--<video id="localVideo"></video>-->
-            <div id="remoteVideos">
+
+            <div style="margin: 0 auto;width: 305px;">
+                <div class="cam-stream" id="myCamera"></div>
+                <div class="cam-stream" id="remote0"></div>
+                <div class="cam-stream" id="remote1"></div>
+                <div class="cam-stream" id="remote2"></div>
             </div>
+
         </section>
     </div><!--/span-->
 

@@ -46,7 +46,70 @@ angular.module( 'ngBoilerplate.home', [
 /**
  * And of course we define a controller for our route.
  */
-.controller( 'HomeCtrl', function HomeController( $scope, socket, ruser, Issue ) {
+.controller( 'HomeCtrl', function HomeController( $scope, socket, ruser, Issue, $http ) {
+
+
+
+
+        var apiKey = '44285682';
+
+        var secret = '24f997d6218bd292bf7a2a5deb11d2bc97c8a008';
+
+//        var sessionId = '2_MX40NDI4NTY4Mn5-VGh1IE9jdCAxNyAwMzo1NDo1NSBQRFQgMjAxM34wLjYxMjIwOTc0fg';
+
+
+
+
+        $scope.joinSession = function(sessionId) {
+            var session = TB.initSession(sessionId);
+
+
+
+            // Token Params
+            var secondsInDay = 86400;
+            var timeNow = Math.floor(Date.now()/1000);
+            var expire = timeNow+secondsInDay;
+            var role = "publisher";
+            var data = "bob";
+
+//        data = escape(data);
+            var rand = Math.floor(Math.random()*999999);
+            var dataString =  "session_id="+sessionId+"&create_time="+timeNow+"&expire_time="+expire+"&role="+role+"&connection_data="+data+"&nonce="+rand;
+
+            // Encryption
+            var hmac = CryptoJS.algo.HMAC.create(CryptoJS.algo.SHA1, secret);
+            hmac.update( dataString );
+            hash = hmac.finalize();
+
+            preCoded = "partner_id="+apiKey+"&sig="+hash+":"+dataString;
+            var token = "T1=="+$.base64.encode( preCoded );
+
+
+            session.connect(apiKey, token);
+
+
+
+            session.on('sessionConnected', function(event) {
+                session.publish('myCamera', { publishVideo: true, width: 150, height: 113});
+                addStreams(event.streams);
+            });
+
+            session.on('streamCreated', function (event) {
+
+                addStreams(event.streams);
+
+            });
+
+            function addStreams(streams) {
+                for (var i = 0; i< streams.length; i++) {
+                    if (streams[i].connection.connectionId != session.connection.connectionId) {
+                        session.subscribe(streams[i], 'remote' + i, { width: 150, height: 113});
+                    }
+                }
+            };
+        }
+
+
 
 
         Issue.getAll().then(
@@ -70,7 +133,7 @@ angular.module( 'ngBoilerplate.home', [
                 }
             );
 
-        $('.oembed').embedly({key: '5eec7cc8fc574a09b4d312009f9fef9b'});
+
 
 
         $scope.tags = [
@@ -102,7 +165,7 @@ angular.module( 'ngBoilerplate.home', [
 
 
 
-        $scope.button = 'Back';
+        $scope.button = 'Add New';
         $scope.toggleForm = function() {
             if($scope.button === 'Add New') {
                 $scope.button = 'Back';
@@ -151,7 +214,7 @@ angular.module( 'ngBoilerplate.home', [
                 // you can name it anything
                 webrtc.joinRoom('test');
             });
-        }
+        };
 
         socket.on('webRTCReceived', function() {
             $scope.answering_webrtc = true;
@@ -176,7 +239,12 @@ angular.module( 'ngBoilerplate.home', [
 
 		socket.on('updatechat', function (name, data) {
 
+            console.log('LINK :: ' + data.match(/(\s|>|^)(https?:[^\s<]*)/igm));
+
             data = data.replace(/(\s|>|^)(https?:[^\s<]*)/igm,'$1<div><a href="$2" class="oembed">$2</a></div>');
+
+
+
 
             if(name === ruser.name) {
                 $scope.messages.unshift({me: true, name: 'Me', text: data});
@@ -202,6 +270,69 @@ angular.module( 'ngBoilerplate.home', [
 			)
 		});
 
+        $.valHooks.textarea = {
+            get: function(elem) {
+                return elem.value.replace(/\r?\n/g, "\r\n");
+            }
+        };
+
+        $scope.checkForLinks = function() {
+
+            var links = $scope.post.message.match(/(\s|>|^)(https?:[^\s<]*)/igm);
+
+            if(!links) {
+
+                $scope.preview.message = $scope.post.message.replace(/\r?\n/g, "<br>");
+
+            } else {
+
+                var data = $scope.post.message.replace(/(\s|>|^)(https?:[^\s<]*)/igm,'$1<div><a href="$2" class="oembed">$2</a></div>');
+
+                $scope.preview.message = data;
+                setTimeout(
+                    function() {
+                        console.log('hey')
+                        $('.oembed').embedly(
+                            {
+                                maxwidth: 400,
+                                maxheight: 400,
+                                query: {maxwidth: 50},
+                                key: '5eec7cc8fc574a09b4d312009f9fef9b'
+                            }
+                        );
+                        $('#js-feed').scrollTop($('#js-feed')[0].scrollHeight);
+                    }, 1000
+                )
+
+
+//                var deferred = $.embedly.extract(links, {
+//
+//                }).progress(function (data) {
+//
+//                }).done(function(results) {
+//                        console.log(results);
+//                        $scope.$apply(function() {
+//                                $scope.preview.message = $scope.post.message.replace(/\r?\n/g, "<br>")
+//                        });
+//                });
+            }
+        }
+
+        $scope.preview = {};
+        $scope.post = {};
+
+        $.embedly.defaults.key = '5eec7cc8fc574a09b4d312009f9fef9b';
+
+        var deferred = $.embedly.extract('http://google.com', {
+
+        }).progress(function (data) {
+
+        }).done(function(results) {
+                console.log(results);
+        });
+
+
+
 		$scope.sendMessage = function(text) {
 			$scope.message = '';
 			socket.emit('sendchat', text);
@@ -218,6 +349,71 @@ angular.module( 'ngBoilerplate.home', [
 		socket.on('updateusers', function(usernames) {
 			$scope.users = usernames;
 		});
+
+        $scope.new_issue = {};
+
+        $scope.createIssue = function() {
+
+           var data = {title: $scope.new_issue.title, labels: []};
+           for (key in $scope.new_issue) {
+               if(!$scope.new_issue[key]) {
+
+               } else {
+                   data.labels.push($scope.new_issue[key])
+               }
+           };
+
+
+            $http(
+                {
+                    method: 'POST',
+                    url: 'https://api.opentok.com/hl/session/create',
+                    headers: {'X-TB-PARTNER-AUTH': apiKey + ':' + secret}
+                }
+            ).then(function(result) {
+                    console.log('Hey', result);
+                    return result.data;
+                })
+                .then(
+                function(xml_string) {
+
+                    console.log('Hey', data)
+
+                    if (window.DOMParser)
+                    {
+                        parser=new DOMParser();
+                        xmlDoc=parser.parseFromString(xml_string,"text/xml");
+                    } else  { // Internet Explorer
+                        xmlDoc=new ActiveXObject("Microsoft.XMLDOM");
+                        xmlDoc.async=false;
+                        xmlDoc.loadXML(xml_string);
+                    }
+                    console.log('Session ID: ', xmlDoc.getElementsByTagName('session_id')[0].textContent);
+
+                    var sessionId = xmlDoc.getElementsByTagName('session_id')[0].textContent;
+                    data.sessionId = sessionId;
+
+                    console.log(data)
+
+                    Issue.createIssue(data)
+                        .then(function() {
+
+                        },
+                        {
+
+                        })
+                },
+                function(err) {
+
+                }
+            )
+
+
+
+
+
+
+        }
 
 
 })

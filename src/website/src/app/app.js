@@ -40,12 +40,12 @@ angular.module( 'ngBoilerplate', [
         setTimeout(function() {
 //            document.getElementById('js-buddy-list').style.height = height - 120 + 'px';
 //            document.getElementById('js-feed').style.height = height - 40 - 55 + 'px';
-            document.getElementById('js-helping-others').style.height = height / 2 - 80 + 'px';
+//            document.getElementById('js-helping-others').style.height = height / 2 - 80 + 'px';
 //            document.getElementById('js-webrtc').style.height = height / 2 - 80 + 'px';
         }, 500)
-    $scope.$watch($scope.height, function() {
-        console.log('HEY')
-    })
+//    $scope.$watch($scope.height, function() {
+//        console.log('HEY')
+//    })
 
 })
 
