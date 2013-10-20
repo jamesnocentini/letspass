@@ -1,10 +1,12 @@
 // usernames which are currently connected to the chat
 var usernames = {};
 
-var users = {};
+
 
 // rooms which are currently available in chat
 var rooms = ['room1','room2','room3', 'room4'];
+
+var connections = {};
 
 var server = require('./server');
 var io = require('socket.io').listen(server);
@@ -12,28 +14,34 @@ var io = require('socket.io').listen(server);
 io.sockets.on('connection', function(socket) {
 
     // when the client emits 'adduser', this listens and executes
-    socket.on('adduser', function(username){
+    socket.on('adduser', function(user){
         // store the username in the socket session for this client
-        socket.username = username;
+        socket.username = user.username;
         // store the room name in the socket session for this client
         socket.room = 'room1';
         // add the client's username to the global list
-        usernames[username] = username;
-        users[username] = socket;
+        usernames[user.username] = user.video;
         // update list of users in chat, client-side
         io.sockets.emit('updateusers', usernames);
+        io.sockets.emit('updateAllHangouts', connections);
         // send client to room 1
         socket.join('room1');
         // echo to client they've connected
         socket.emit('updatechat', 'SERVER', 'you have connected to room1');
         // echo to room 1 that a person has connected to their room
-        socket.broadcast.to('room1').emit('updatechat', 'SERVER', username + ' has connected to this room');
+        socket.broadcast.to('room1').emit('updatechat', 'SERVER', user.username + ' has connected to this room');
         socket.emit('updaterooms', rooms, 'room1');
+
+        console.log(usernames);
     });
 
-    socket.on('webRTC', function(data) {
-        users[data.to].emit('webRTCReceived')
-    })
+    socket.on('updateOneHangout', function(obj) {
+        connections[obj.session] = obj.count;
+        console.log('CURRENT CONNECTIONS :: ' + connections);
+
+        io.sockets.in(socket.room).emit('updateAllHangouts', connections);
+
+    });
 
     // when the client emits 'sendchat', this listens and executes
     socket.on('sendchat', function (data) {

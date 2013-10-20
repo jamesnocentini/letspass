@@ -99,8 +99,16 @@ angular.module( 'ngBoilerplate.home', [
             // Connect to a session
             session.connect(apiKey, token);
 
+            var connectionCount = 0;
+
             //When connected publish the local stream
             session.on('sessionConnected', function(event) {
+                connectionCount = event.connections.length;
+                console.log('CONNECTION COUNT :: ' + connectionCount);
+                //emit the updated count of connections
+                socket.emit('updateOneHangout', {session: sessionId, count: connectionCount});
+
+
                 session.publish('myCamera', { publishVideo: true, width: 150, height: 113});
                 addStreams(event.streams);
             });
@@ -109,6 +117,20 @@ angular.module( 'ngBoilerplate.home', [
             session.on('streamCreated', function (event) {
                 addStreams(event.streams);
             });
+
+            session.on('connectionCreated', function(event) {
+                connectionCount += event.connections.length;
+                console.log('CONNECTION COUNT :: ' + event.connections.length);
+                //emit the updated count of connections
+                socket.emit('updateOneHangout', {session: sessionId, count: connectionCount});
+            });
+
+            session.on('connectionDestroyed', function(event) {
+                connectionCount -= event.connections.length;
+                console.log('CONNECTION COUNT :: ' + event.connections.length);
+                //emit the updated count of connections
+                socket.emit('updateOneHangout', {session: sessionId, count: connectionCount});
+            })
 
             function addStreams(streams) {
                 for (var i = 0; i< streams.length; i++) {
@@ -119,12 +141,19 @@ angular.module( 'ngBoilerplate.home', [
             };
         };
 
+        //updates the join button each hangout tab
+        socket.on('updateAllHangouts', function (connections) {
+            $scope.issues.forEach(function(issue) {
+                issue.connections = connections[issue.sessionId];
+            })
+        });
+
         //Get all issues from node api
         Issue.getAll().then(
             function (data) {
                 $scope.issues = data;
             }
-        )
+        );
 
         //Bootstrap - jQuery code to enable the off-canvas layout
         $('[data-toggle=offcanvas-right]').click(function() {
@@ -174,50 +203,8 @@ angular.module( 'ngBoilerplate.home', [
 		// on connection to server, ask for user's name with an anonymous callback
 		socket.on('connect', function(){
 			// call the server-side function 'adduser' and send one parameter (name of user)
-			socket.emit('adduser', ruser.name);
+			socket.emit('adduser', {username: ruser.name, video: $scope.webrtc_browser});
 		});
-
-
-        $scope.offerWebRTC = function(to) {
-            var data = {from: ruser.name, to: to};
-            socket.emit('webRTC', data);
-            var webrtc = new SimpleWebRTC({
-                // the id/element dom element that will hold "our" video
-                localVideoEl: 'localVideo',
-                // the id/element dom element that will hold remote videos
-                remoteVideosEl: 'remoteVideos',
-                // immediately ask for camera access
-                autoRequestMedia: true,
-                media: {
-                    audio:true
-                }
-            });
-            webrtc.on('readyToCall', function () {
-                // you can name it anything
-                webrtc.joinRoom('test');
-            });
-        };
-
-        socket.on('webRTCReceived', function() {
-            $scope.answering_webrtc = true;
-        });
-
-        $scope.accept_webrtc = function() {
-            $scope.answering_webrtc = false;
-            var webrtc = new SimpleWebRTC({
-                // the id/element dom element that will hold "our" video
-                localVideoEl: 'localVideo',
-                // the id/element dom element that will hold remote videos
-                remoteVideosEl: 'remoteVideos',
-                // immediately ask for camera access
-                autoRequestMedia: true
-            });
-
-            webrtc.on('readyToCall', function () {
-                // you can name it anything
-                webrtc.joinRoom('test');
-            });
-        };
 
         //server notifies us of new message
 		socket.on('updatechat', function (name, data) {
@@ -290,6 +277,8 @@ angular.module( 'ngBoilerplate.home', [
 		$scope.users = {};
         //receives list of users connected from server
 		socket.on('updateusers', function(usernames) {
+            console.log(usernames)
+            delete usernames[ruser.name];
 			$scope.users = usernames;
 		});
 

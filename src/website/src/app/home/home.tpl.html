@@ -14,12 +14,14 @@
                 <div class="panel-body x-user-container">
                     <div class="media">
                         <a class="pull-left" href="#">
-                            <img class="media-object" src="http://placehold.it/50x50" alt="...">
+                            <img class="media-object img-circle" ng-src="{{ current.avatar }}" alt="avatar">
                         </a>
                         <div class="media-body">
                             <h4 class="media-heading">{{current.name}}</h4>
                             Online
-                            <i class="icon icon-circle x-online"></i>
+                            <i
+                                    ng-class="{'glyphicon-facetime-video': webrtc_browser, 'glyphicon-eye-close': !webrtc_browser}"
+                                    class="glyphicon"></i>
                         </div>
                     </div>
                 </div>
@@ -29,28 +31,16 @@
                         id="js-buddy-list"
                         class="list-group x-list-group">
                     <li
-                            ng-repeat="(key, username) in users"
+                            ng-repeat="(username, video) in users"
                             class="list-group-item">
-                        <p>
+                        <p style="margin-bottom: 0;">
                             {{username}}
-                            <i style="position: absolute;right: 10px; top: 50%;margin-top: -11px;"
-                               class="icon-laptop"></i>
+                            <i style="position: absolute;right: 10px; top: 50%;margin-top: -8px;"
+                               ng-class="{'glyphicon-facetime-video': video, 'glyphicon-eye-close': !video}"
+                               class="glyphicon"></i>
                         </p>
-
-
-
                     </li>
-                    <li
-                            class="list-group-item">
-                        <p>
-                            Hello
-                            <i style="position: absolute;right: 10px; top: 50%;margin-top: -11px;"
-                               class="glyphicon glyphicon-phone"></i>
-                        </p>
 
-
-
-                    </li>
                 </ul>
             </div>
 
@@ -201,7 +191,7 @@
                                   class="{{ 'label label-primary selected labelstyle-' + tag.split('@')[1] }}">{{ tag.split('@')[0] }}</span>
                             <button
                                     ng-click="joinSession(issue.sessionId);"
-                                    class="btn btn-success btn-xs pull-right hidden-xs">Online</button>
+                                    class="btn btn-warning btn-xs pull-right hidden-xs">Join ({{ issue.connections || 0 }})</button>
                         </section>
                         <small class="list-group-item-text">Opened by {{ issue.user_name }}</small>
                     </li>
