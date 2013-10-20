@@ -20,8 +20,17 @@
                             <h4 class="media-heading">{{current.name}}</h4>
                             Online
                             <i
+                                    style="left: 5px;top: 3px;position: relative;"
                                     ng-class="{'glyphicon-facetime-video': webrtc_browser, 'glyphicon-eye-close': !webrtc_browser}"
                                     class="glyphicon"></i>
+
+                            <form class="pull-right" method="get" action="/1.0/logout">
+                                <button
+                                        style="vertical-align: middle;"
+                                        type="submit"
+                                        class="btn btn-danger btn-xs">Logout</button>
+                            </form>
+
                         </div>
                     </div>
                 </div>

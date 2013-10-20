@@ -64,6 +64,11 @@ module.exports.routes = function(app) {
         successRedirect: '/',
         failureRedirect: '/'
     }));
+
+    app.get('/1.0/logout', function(req, res){
+        req.logout();
+        res.redirect('/');
+    });
 };
 
 module.exports.authRequired = function(req, res, next) {
