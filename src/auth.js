@@ -39,10 +39,10 @@ module.exports.setup = function(app) {
                 console.log(user)
                 if (err) {return done(err);}
                 if (!user) {
-                    return done(null, false, {message: 'Incorrect username.'});
+                    return done(null, 'email-not-found');
                 }
                 if (user.password != password) {
-                    return done(null, false, { message: 'Invalid password' });
+                    return done(null, 'wrong-password');
                 }
                 return done(null, user);
             })
@@ -56,7 +56,22 @@ module.exports.setup = function(app) {
 module.exports.routes = function(app) {
 
     app.post('/1.0/login',
-        passport.authenticate('local', {successRedirect: '/home', failureRedirect: '/login'})
+        function(req, res, next) {
+            passport.authenticate('local', function(err, user) {
+                if(user === 'email-not-found') {
+                    res.status(404).send('Oops. Email was not found.');
+                } else if (user === 'wrong-password') {
+                    res.status(401).send('Oops. Wrong password.');
+                } else {
+                    req.user = user;
+                    res.status(200).send('ok');
+                    req.logIn(user, function(err) {
+                        if (err) { return next(err); }
+                        return res.redirect('/');
+                    });
+                }
+            })(req, res, next)
+        }
     );
 
     app.get('/auth/facebook', passport.authenticate('facebook', {scope: config.param('scope')}));

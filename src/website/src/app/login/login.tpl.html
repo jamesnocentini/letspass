@@ -6,10 +6,26 @@
 
     <div class="x-smart-friends"></div>
 
-    <form class="form-signin" action="/1.0/login" method="post">
-        <input type="email" name="email" class="form-control" placeholder="Email address" autofocus>
-        <input type="password" name="password" class="form-control" placeholder="Password">
-        <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+    <form class="form-signin">
+        <div class="alert alert-info">
+            <a href="#" class="alert-link">
+                {{ errorMessage }}
+            </a>
+        </div>
+        <input
+                ng-model="login.email"
+                type="email"
+                name="email"
+                class="form-control"
+                placeholder="Email address"
+                autofocus>
+        <input
+                ng-model="login.password"
+                type="password"
+                name="password"
+                class="form-control"
+                placeholder="Password">
+        <button class="btn btn-lg btn-primary btn-block" ng-click="loginUser();">Sign in</button>
     </form>
 
 </div>

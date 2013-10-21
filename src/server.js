@@ -3,6 +3,8 @@ process.env['ENV'] = process.env['ENV'] || 'dev';
 var express = require('express');
 var config = require('./../config.js');
 
+
+var flash = require('connect-flash');
 var app = express();
 var http = require('http');
 var server = module.exports = http.createServer(app);
@@ -28,6 +30,8 @@ MongoClient.connect(config.param('mongo_uri'), function(err, d) {
 app.use(express.cookieParser());
 app.use(express.bodyParser());
 app.use(express.session({secret: 'Super secret secret'}));
+
+app.use(flash());
 
 
 var passport = require('passport');

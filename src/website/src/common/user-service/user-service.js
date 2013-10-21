@@ -38,6 +38,10 @@ angular.module('lp-user-service', [])
                         }
                     )
                 }
+            },
+            login: function(data) {
+                return $http.post('/1.0/login', data)
+                            .then(function(result) {return result.data})
             }
         }
     })

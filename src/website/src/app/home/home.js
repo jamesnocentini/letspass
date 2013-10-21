@@ -72,10 +72,15 @@ angular.module( 'ngBoilerplate.home', [
 
         //message array to hold the list of messages
         $scope.messages = [];
+        var session;
+        var sessionId;
+        var connectionCount = 0;
 
         $scope.joinSession = function(sessionId) {
             // Initializes the session and return the Session object
-            var session = TB.initSession(sessionId);
+            session = TB.initSession(sessionId);
+
+            sessionId = sessionId;
 
             // Token Params
             var secondsInDay = 86400;
@@ -99,7 +104,7 @@ angular.module( 'ngBoilerplate.home', [
             // Connect to a session
             session.connect(apiKey, token);
 
-            var connectionCount = 0;
+            connectionCount = 0;
 
             //When connected publish the local stream
             session.on('sessionConnected', function(event) {
@@ -140,6 +145,19 @@ angular.module( 'ngBoilerplate.home', [
                 }
             };
         };
+
+        var HTML = '<div class="cam-stream" id="myCamera"></div>' +
+            '<div class="cam-stream" id="remote0"></div>' +
+            '<div class="cam-stream" id="remote1"></div>' +
+            '<div class="cam-stream" id="remote2"></div>';
+
+        $scope.html_vids = HTML;
+
+        $scope.cleanupSession = function() {
+            socket.emit('updateOneHangout', {session: sessionId, count: connectionCount});
+            session.disconnect();
+            $scope.html_vids = HTML;
+        }
 
         //updates the join button each hangout tab
         socket.on('updateAllHangouts', function (connections) {

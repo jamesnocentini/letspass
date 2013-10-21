@@ -21,8 +21,21 @@ angular.module('letspass.login', [
         })
     })
 
-.controller('LoginCtrl', function LoginCtrl ($scope) {
+.controller('LoginCtrl', function LoginCtrl ($scope, user, $state) {
 
+   $scope.login = {};
 
+    $scope.loginUser = function() {
+        console.log($scope.login)
+        user.login($scope.login)
+            .then(
+                function(res) {
+                    $state.transitionTo('home')
+                },
+                function(err) {
+                    $scope.errorMessage = err.data;
+                }
+            )
+    }
 
 });
