@@ -15,5 +15,4 @@ module.exports = function(app) {
 
     app.get('/1.0/issues', auth, GM.getIssues);
 
-
 };

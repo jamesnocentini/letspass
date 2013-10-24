@@ -72,10 +72,21 @@ angular.module( 'ngBoilerplate.home', [
 
         //message array to hold the list of messages
         $scope.messages = [];
+        var session;
+        var oldSessionId;
 
         $scope.joinSession = function(sessionId) {
+
+
+            if(session) {
+                session.disconnect();
+                socket.emit('changeHangout', {session: oldSessionId});
+
+            }
+            oldSessionId = sessionId;
+
             // Initializes the session and return the Session object
-            var session = TB.initSession(sessionId);
+            session = TB.initSession(sessionId);
 
             // Token Params
             var secondsInDay = 86400;
@@ -108,8 +119,12 @@ angular.module( 'ngBoilerplate.home', [
                 //emit the updated count of connections
                 socket.emit('updateOneHangout', {session: sessionId, count: connectionCount});
 
+                var div = document.createElement('div');
+                div.setAttribute('id', 'publisher');
+                div.setAttribute('class', 'cam-stream');
+                document.getElementById('js-cams').appendChild(div);
 
-                session.publish('myCamera', { publishVideo: true, width: 150, height: 113});
+                session.publish('publisher', { publishVideo: true, width: 150, height: 113});
                 addStreams(event.streams);
             });
 
@@ -118,25 +133,31 @@ angular.module( 'ngBoilerplate.home', [
                 addStreams(event.streams);
             });
 
-            session.on('connectionCreated', function(event) {
-                connectionCount += event.connections.length;
-                console.log('CONNECTION COUNT :: ' + event.connections.length);
-                //emit the updated count of connections
-                socket.emit('updateOneHangout', {session: sessionId, count: connectionCount});
-            });
+//            session.on('connectionCreated', function(event) {
+//                connectionCount += event.connections.length;
+//                console.log('CONNECTION COUNT :: ' + event.connections.length);
+//                //emit the updated count of connections
+//                socket.emit('updateOneHangout', {session: sessionId, count: connectionCount});
+//            });
 
-            session.on('connectionDestroyed', function(event) {
-                connectionCount -= event.connections.length;
-                console.log('CONNECTION COUNT :: ' + event.connections.length);
-                //emit the updated count of connections
-                socket.emit('updateOneHangout', {session: sessionId, count: connectionCount});
-            })
+//            session.on('connectionDestroyed', function(event) {
+//                connectionCount -= event.connections.length;
+//                console.log('CONNECTION COUNT :: ' + event.connections.length);
+//                //emit the updated count of connections
+//                socket.emit('updateOneHangout', {session: sessionId, count: connectionCount});
+//            });
 
             function addStreams(streams) {
                 for (var i = 0; i< streams.length; i++) {
-                    if (streams[i].connection.connectionId != session.connection.connectionId) {
-                        session.subscribe(streams[i], 'remote' + i, { width: 150, height: 113});
+                    if (streams[i].connection.connectionId === session.connection.connectionId) {
+                        return
                     }
+                    var div = document.createElement('div');
+                    var divId = streams[i].streamId;
+                    div.setAttribute('id', divId);
+                    div.setAttribute('class', 'cam-stream');
+                    document.getElementById('js-cams').appendChild(div);
+                    session.subscribe(streams[i], divId, { width: 150, height: 113});
                 }
             };
         };
@@ -203,7 +224,7 @@ angular.module( 'ngBoilerplate.home', [
 		// on connection to server, ask for user's name with an anonymous callback
 		socket.on('connect', function(){
 			// call the server-side function 'adduser' and send one parameter (name of user)
-			socket.emit('adduser', {username: ruser.name, video: $scope.webrtc_browser});
+			socket.emit('adduser', {username: ruser.name, video: $scope.webrtc_browser, group: ruser.group});
 		});
 
         //server notifies us of new message

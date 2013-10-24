@@ -18,7 +18,8 @@
     "bcrypt-nodejs": "0.0.3",
     "passport": "~0.1.17",
     "passport-local": "~0.1.6",
-    "connect-flash": "~0.1.1"
+    "connect-flash": "~0.1.1",
+    "opentok": "~0.3.4"
   },
   "author": "",
   "license": "BSD"

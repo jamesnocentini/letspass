@@ -7,7 +7,7 @@
     <div class="x-smart-friends"></div>
 
     <form class="form-signin">
-        <div class="alert alert-info">
+        <div ng-class="{'hidden': !errorMessage}" class="alert alert-info">
             <a href="#" class="alert-link">
                 {{ errorMessage }}
             </a>
