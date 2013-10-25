@@ -13,6 +13,6 @@ module.exports = function(app) {
 
     app.post('/1.0/issues', auth, GM.newIssue);
 
-    app.get('/1.0/issues', auth, GM.getIssues);
+    app.get('/1.0/issues/:group', auth, GM.getIssues);
 
 };

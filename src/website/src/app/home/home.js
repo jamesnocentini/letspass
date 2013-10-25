@@ -170,7 +170,7 @@ angular.module( 'ngBoilerplate.home', [
         });
 
         //Get all issues from node api
-        Issue.getAll().then(
+        Issue.getAll(ruser.group).then(
             function (data) {
                 $scope.issues = data;
             }
@@ -358,11 +358,14 @@ angular.module( 'ngBoilerplate.home', [
                     //attach sessionId to data object
                     data.sessionId = sessionId;
 
+                    //attach group to data object
+                    data.group = ruser.group;
+
                     //post the data object to server to create issue
                     Issue.createIssue(data)
                         .then(function(res) {
                             //Get all issues from node api
-                            Issue.getAll().then(
+                            Issue.getAll(ruser.group).then(
                                 function (data) {
                                     $scope.issues = data;
                                     $scope.button = 'Add New';

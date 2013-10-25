@@ -10,7 +10,7 @@ exports.newIssue = function(req, res) {
 };
 
 exports.getIssues = function(req, res) {
-    Issues.find().toArray(function(err, docs) {
+    Issues.find({group: req.params.group}).toArray(function(err, docs) {
         res.status(200).send(docs);
     })
 }
